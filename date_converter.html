@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<title>BS ↔ AD Converter</title>
+<style>
+:root{
+  --bg:#f0f2f5;
+  --card:#ffffff;
+  --text:#222;
+  --primary:#4CAF50;
+}
+body.dark{
+  --bg:#121212;
+  --card:#1e1e1e;
+  --text:#f1f1f1;
+}
+body{
+  font-family:"Kalimati","Mangal",Arial,sans-serif;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+}
+header,footer{
+  background:var(--primary);
+  color:white;
+  text-align:center;
+  padding:15px;
+}
+header h1{margin:0;font-size:24px;}
+.container{
+  display:flex;
+  justify-content:center;
+  padding:30px;
+}
+.card{
+  background:var(--card);
+  width:100%;
+  max-width:600px;
+  border-radius:12px;
+  box-shadow:0 6px 15px rgba(0,0,0,.15);
+  padding:25px;
+}
+h2{text-align:center;margin-bottom:20px;}
+textarea{
+  width:95%;
+  height:60px;
+  font-size:18px;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  resize:none;
+  line-height:1.5;
+  background:var(--card);
+  color:var(--text);
+}
+.actions{
+  text-align:center;
+  margin-top:20px;
+}
+button{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:10px 18px;
+  font-size:15px;
+  border-radius:6px;
+  cursor:pointer;
+  margin:5px;
+}
+button:hover{opacity:.9;}
+.toggle{
+  background:#333;
+}
+label{font-weight:bold;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BS ↔ AD Converter</h1>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Convert Dates</h2>
+    
+    <label for="bsInput">Bikram Sambat (BS)</label>
+    <textarea id="bsInput" placeholder="Example: 2080-01-01"></textarea>
+    
+    <label for="adOutput">AD (Gregorian)</label>
+    <textarea id="adOutput" placeholder="Converted date appears here..." readonly></textarea>
+    
+    <div class="actions">
+      <button onclick="convertBSToAD()">Convert BS → AD</button>
+      <button onclick="copyText()">Copy</button>
+      <button onclick="clearAll()">Clear</button>
+    </div>
+    
+    <div style="text-align:center;">
+      <button class="toggle" onclick="toggleDark()">🌙 Dark Mode</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 BS ↔ AD Converter
+</footer>
+
+<script>
+// ================= SIMPLE BS → AD CONVERTER =================
+// NOTE: For full accuracy, use a BS-AD lookup table or library.
+// This example uses a basic approximation (BS = AD + 56 years + 8 months)
+function convertBSToAD(){
+  const bsDate = bsInput.value.trim();
+  if(!bsDate){
+    alert("Please enter a BS date in YYYY-MM-DD format");
+    return;
+  }
+  
+  const parts = bsDate.split("-");
+  if(parts.length !== 3){
+    alert("Invalid format. Use YYYY-MM-DD");
+    return;
+  }
+  
+  let bsYear = parseInt(parts[0]);
+  let bsMonth = parseInt(parts[1]);
+  let bsDay = parseInt(parts[2]);
+
+  if(isNaN(bsYear) || isNaN(bsMonth) || isNaN(bsDay)){
+    alert("Invalid date numbers");
+    return;
+  }
+  
+  // Approximate conversion
+  let adYear = bsYear - 56;
+  let adMonth = bsMonth - 8;
+  let adDay = bsDay;
+
+  if(adMonth <= 0){
+    adMonth += 12;
+    adYear -=1;
+  }
+
+  // Format AD date
+  const adDateStr = `${adYear}-${String(adMonth).padStart(2,'0')}-${String(adDay).padStart(2,'0')}`;
+  adOutput.value = adDateStr;
+}
+
+// ================= UTILITIES =================
+function copyText(){
+  adOutput.select();
+  document.execCommand("copy");
+  alert("Copied!");
+}
+
+function clearAll(){
+  bsInput.value='';
+  adOutput.value='';
+}
+
+// ================= DARK MODE =================
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>
