@@ -91,6 +91,9 @@ label{font-weight:bold;}
     <label for="adOutput">AD (Gregorian)</label>
     <textarea id="adOutput" placeholder="Converted date appears here..." readonly></textarea>
     
+    <label for="adWords">AD Date in Words</label>
+    <textarea id="adWords" placeholder="Date in words appears here..." readonly></textarea>
+    
     <div class="actions">
       <button onclick="convertBSToAD()">Convert BS → AD</button>
       <button onclick="copyText()">Copy</button>
@@ -109,8 +112,6 @@ label{font-weight:bold;}
 
 <script>
 // ================= SIMPLE BS → AD CONVERTER =================
-// NOTE: For full accuracy, use a BS-AD lookup table or library.
-// This example uses a basic approximation (BS = AD + 56 years + 8 months)
 function convertBSToAD(){
   const bsDate = bsInput.value.trim();
   if(!bsDate){
@@ -146,18 +147,53 @@ function convertBSToAD(){
   // Format AD date
   const adDateStr = `${adYear}-${String(adMonth).padStart(2,'0')}-${String(adDay).padStart(2,'0')}`;
   adOutput.value = adDateStr;
+  
+  // Convert to words
+  adWords.value = convertDateToWords(adYear, adMonth, adDay);
+}
+
+// ================= DATE TO WORDS =================
+function convertDateToWords(year, month, day){
+  const months = ["January","February","March","April","May","June",
+                  "July","August","September","October","November","December"];
+  const dayWords = numberToWords(day);
+  const yearWords = numberToWords(year);
+  return `${dayWords} ${months[month-1]} ${yearWords}`;
+}
+
+// ================= NUMBER TO WORDS =================
+function numberToWords(num){
+  if(num === 0) return "Zero";
+  const a = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine",
+            "Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+  const b = ["","Ten","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+  
+  if(num < 20) return a[num];
+  if(num < 100){
+    return b[Math.floor(num/10)] + (num%10 !== 0 ? " "+a[num%10] : "");
+  }
+  if(num < 1000){
+    return a[Math.floor(num/100)] + " Hundred" + (num%100 !==0 ? " "+numberToWords(num%100) : "");
+  }
+  if(num < 1000000){
+    return numberToWords(Math.floor(num/1000)) + " Thousand" + (num%1000 !==0 ? " "+numberToWords(num%1000) : "");
+  }
+  if(num < 1000000000){
+    return numberToWords(Math.floor(num/1000000)) + " Million" + (num%1000000 !==0 ? " "+numberToWords(num%1000000) : "");
+  }
+  return num;
 }
 
 // ================= UTILITIES =================
 function copyText(){
-  adOutput.select();
-  document.execCommand("copy");
-  alert("Copied!");
+  let combinedText = `AD Date: ${adOutput.value}\nIn Words: ${adWords.value}`;
+  navigator.clipboard.writeText(combinedText).then(()=> alert("Copied!"));
 }
 
 function clearAll(){
   bsInput.value='';
   adOutput.value='';
+  adWords.value='';
 }
 
 // ================= DARK MODE =================
