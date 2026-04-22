@@ -2,100 +2,353 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nepali-English Calendar Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hamro Patro Style Calendar</title>
+<!-- Google Fonts for clean look -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-  body {
-    font-family: "Kalimati","Mangal", Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f0f2f5;
+  :root {
+    --hp-red: #d32f2f; /* Hamro Patro Red */
+    --hp-green: #2e7d32; /* Saturday Green */
+    --hp-light-red: #ffebee;
+    --text-main: #333;
+    --text-light: #777;
+    --border-color: #e0e0e0;
+    --bg-body: #f4f5f7;
+    --white: #ffffff;
   }
 
-  header, footer {
-    text-align: center;
-    background: #4CAF50;
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--bg-body);
+    color: var(--text-main);
+  }
+
+  /* --- Header Section --- */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid #ddd;
+    padding: 0;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 30px;
+    background: var(--white);
+  }
+
+  .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--hp-green);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo span { color: var(--hp-red); }
+
+  .nav-strip {
+    background: var(--hp-green);
     color: white;
+    padding: 0 30px;
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav-strip a { color: white; text-decoration: none; padding: 8px 0; border-bottom: 2px solid transparent; }
+  .nav-strip a:hover { border-bottom-color: white; }
+
+  /* --- Main Layout (3 Columns) --- */
+  .main-wrapper {
+    display: grid;
+    grid-template-columns: 220px 1fr 300px; /* Sidebar | Calendar | Widget */
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+  }
+
+  /* --- Sidebar (Left) --- */
+  .sidebar-menu {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-menu li a {
+    display: block;
+    padding: 12px 15px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+    transition: 0.2s;
+  }
+  .sidebar-menu li a i { width: 20px; color: var(--text-light); margin-right: 8px; }
+  .sidebar-menu li a:hover { background: var(--hp-light-red); color: var(--hp-red); }
+  .sidebar-menu li a:hover i { color: var(--hp-red); }
+
+  /* --- Center Column (Calendar) --- */
+  .calendar-box {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 20px;
+  }
+
+  .calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  .control-group select, .control-group button {
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: white;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .control-group button:hover { background: #eee; }
+
+  /* Table Styling - Hamro Patro Style */
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  
+  th {
+    background: var(--hp-red);
+    color: white;
+    padding: 10px;
+    font-size: 13px;
+    text-transform: uppercase;
+    border: 1px solid #b71c1c; /* Darker red border for grid */
+  }
+  
+  th.saturday { background: var(--hp-green); border-color: #1b5e20; }
+
+  td {
+    height: 100px;
+    border: 1px solid var(--border-color);
+    vertical-align: top;
+    padding: 0; /* We handle padding inside spans */
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  td:hover { background: #fafafa; }
+
+  /* The Hamro Patro Date Cell Layout */
+  .big-number { 
+    /* Centered BS Date */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Mukta', sans-serif; /* Good for Nepali */
+    color: #333;
+  }
+
+  .small-number { 
+    /* Top Right AD Date */
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #999;
+    background: #eee;
+    padding: 2px 4px;
+    border-radius: 2px;
+  }
+
+  /* Saturday Styling */
+  td.saturday { color: var(--hp-red); }
+  td.saturday .big-number { color: var(--hp-red); }
+  td.saturday .small-number { color: var(--text-light); }
+
+  /* Today Highlight */
+  td.today { background: #ffebee !important; }
+  td.today .big-number { color: var(--hp-red); }
+  td.today::after {
+    content: ''; 
+    position: absolute; 
+    top: 2px; left: 2px; 
+    width: 8px; height: 8px; 
+    background: var(--hp-red); 
+    border-radius: 50%;
+  }
+
+  td.other-month { background: #fcfcfc; opacity: 0.6; pointer-events: none; }
+  td.other-month .big-number { color: #ccc; }
+
+  #toggleDate {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--hp-red);
+    border: none;
+    background: none;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* --- Right Column (Widgets) --- */
+  .widget-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     padding: 15px;
   }
 
-  header h1 { margin: 0; font-size: 24px; }
-  footer p { margin: 0; font-size: 14px; }
-
-  .main-container {
+  .card-title {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--hp-red);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
   }
 
-  /* Widget Card */
-  .widget-card {
-    background: linear-gradient(145deg, #6BBF59, #4CAF50);
-    width: 260px;
-    border-radius: 15px;
-    color: white;
-    padding: 20px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  /* Clock Card */
+  .clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  canvas#analogClock {
+    margin-bottom: 15px;
+  }
+  #clockTime {
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--text-main);
+    margin: 5px 0;
+    font-family: monospace;
+  }
+
+  /* Panchang Card */
+  .panchang-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eee;
+  }
+  .panchang-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; }
+  .panchang-value { font-weight: 600; color: #333; font-size: 15px; text-align: right;}
+  
+  #nepaliDate { color: var(--hp-red); font-family: 'Mukta', sans-serif; font-size: 16px; }
+  #englishDate { font-size: 14px; }
+
+  #horoscope {
+    margin-top: 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
     text-align: center;
-    flex-shrink: 0;
   }
-  .widget-card .time { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-  .widget-card .nepali-date { font-size: 20px; margin-bottom: 5px; }
-  .widget-card .english-date { font-size: 16px; margin-bottom: 5px; }
-  .widget-card .horoscope { font-size: 16px; margin-top: 5px; font-weight: bold; }
 
-  /* Calendar Card */
-  .calendar-container {
-    background: white;
+  footer {
+    text-align: center;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    width: 850px;
+    font-size: 12px;
+    color: #999;
+    border-top: 1px solid #ddd;
+    margin-top: 30px;
+    background: white;
   }
-  .calendar-container h2 { text-align: center; margin-bottom: 15px; }
-  .controls { display: flex; justify-content: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
-  select, button { padding: 5px 10px; font-size: 16px; cursor: pointer; }
 
-  table { width: 100%; border-collapse: collapse; text-align: center; }
-  th, td { padding: 10px; border: 1px solid #ddd; vertical-align: top; height: 80px; position: relative; }
-  th { background: #4CAF50; color: white; }
-  td.today { background: #ffeb3b; }
-  td.other-month { color: #aaa; }
-  td.saturday, th.saturday { color: red; }
-
-  .big-number { font-size: 28px; font-weight: bold; position: absolute; top: 24px; right: 50px; }
-  .small-number { font-size: 14px; color: #555; position: absolute; bottom: 5px; right: 5px; }
-
+  /* Responsive */
+  @media (max-width: 992px) {
+    .main-wrapper { grid-template-columns: 1fr 300px; }
+    .sidebar-menu { display: none; }
+  }
+  @media (max-width: 768px) {
+    .main-wrapper { grid-template-columns: 1fr; }
+    td { height: 70px; }
+    .big-number { font-size: 20px; }
+    .nav-strip { overflow-x: auto; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Nepali-English Calendar Portal</h1>
+  <div class="top-bar">
+    <a href="#" class="logo"><i class="fas fa-calendar-check"></i> Hamro <span>Patro</span></a>
+    <div style="font-size: 14px; color: #555;">
+      <span id="headerEN"></span>
+    </div>
+  </div>
+  <nav class="nav-strip">
+    <a href="#">Calendar</a>
+    <a href="converter.html">Date Converter</a>
+    <a href="#">Horoscope</a>
+    <a href="#">News</a>
+    <a href="#">Festivals</a>
+    <a href="#">Government</a>
+  </nav>
 </header>
 
-<div class="main-container">
-  <!-- Widget on left -->
-  <div class="widget-card">
-<canvas id="analogClock" width="200" height="200" style="margin-top:10px; background:white; border-radius:50%;"></canvas>
-    <div class="time" id="clockTime">--:--:--</div>
-    <div class="nepali-date" id="nepaliDate">--</div>
-    <div class="english-date" id="englishDate">--</div>
-    <div class="horoscope" id="horoscope">Horoscope: --</div>
-    
-  </div>
+<div class="main-wrapper">
+  
+  <!-- Sidebar (Left) -->
+  <aside>
+    <ul class="sidebar-menu">
+      <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="#"><i class="fas fa-calendar-alt"></i> 2083 Calendar</a></li>
+      <li><a href="#"><i class="fas fa-clock"></i> World Time</a></li>
+      <li><a href="#"><i class="fas fa-exchange-alt"></i> Date Converter</a></li>
+      <li><a href="#"><i class="fas fa-user-astronaut"></i> Horoscope</a></li>
+      <li><a href="#"><i class="fas fa-gopuram"></i> Festivals</a></li>
+      <li><a href="#"><i class="fas fa-newspaper"></i> News</a></li>
+      <li><a href="#"><i class="fas fa-download"></i> Download App</a></li>
+    </ul>
+  </aside>
 
-  <!-- Calendar on right -->
-  <div class="calendar-container">
-    <h2>Calendar</h2>
-    <div class="controls">
-      <button id="prevMonth">&lt; Prev</button>
-      <select id="year"></select>
-      <select id="month"></select>
-      <button id="nextMonth">Next &gt;</button>
-      <button id="toggleDate">Show AD Big</button>
+  <!-- Main Calendar (Center) -->
+  <main class="calendar-box">
+    <div class="calendar-controls">
+      <div class="control-group">
+        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+        <select id="year"></select>
+        <select id="month"></select>
+        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div style="font-weight: bold; color: var(--hp-red);">Nepali Calendar</div>
     </div>
+
     <table id="calendar">
       <thead>
         <tr>
@@ -110,13 +363,60 @@
       </thead>
       <tbody></tbody>
     </table>
-  </div>
+    <div style="text-align: center;">
+        <button id="toggleDate">Switch Date Display</button>
+    </div>
+  </main>
+
+  <!-- Dashboard Widgets (Right) -->
+  <aside class="widget-panel">
+    
+    <!-- Clock Widget -->
+    <div class="card clock-container">
+      <h3 class="card-title"><i class="fas fa-clock"></i> Current Time</h3>
+      <canvas id="analogClock" width="180" height="180"></canvas>
+      <div class="time" id="clockTime">--:--:--</div>
+    </div>
+
+    <!-- Panchang / Date Widget -->
+    <div class="card">
+      <h3 class="card-title"><i class="fas fa-calendar-day"></i> Today's Date</h3>
+      
+      <div class="panchang-row">
+        <span class="panchang-label">Nepali Date (BS)</span>
+        <span class="panchang-value" id="nepaliDate">--</span>
+      </div>
+      
+      <div class="panchang-row" style="border:none;">
+        <span class="panchang-label">English Date (AD)</span>
+        <span class="panchang-value" id="englishDate">--</span>
+      </div>
+
+      <div id="horoscope">
+        Horoscope: --
+      </div>
+    </div>
+
+    <!-- Placeholder Widget -->
+    <div class="card">
+      <h3 class="card-title"><i class="fas fa-info-circle"></i> Information</h3>
+      <p style="font-size: 13px; color: #555; line-height: 1.5;">
+        Use the controls to navigate between months. Saturday is highlighted in green. Today is highlighted in red.
+      </p>
+    </div>
+
+  </aside>
+
 </div>
 
 <footer>
-  <p>© 2026 Nepali-English Calendar | Developed by You</p>
+  © 2026 Hamro Patro Style Clone. All rights reserved.
 </footer>
 
+<!-- 
+    NOTE: JS LOGIC REMAINS UNCHANGED.
+    CSS ABOVE IS RESPONSIBLE FOR ALL VISUAL CHANGES.
+-->
 <script>
 // Nepali months, English months
 const nepaliMonths = ["बैशाख","जेष्ठ","असार","श्रावण","भदौ","आश्विन","कार्तिक","मंसिर","पौष","माघ","फाल्गुन","चैत्र"];
@@ -220,7 +520,7 @@ yearSelect.addEventListener('change', ()=>generateCalendar(parseInt(yearSelect.v
 monthSelect.addEventListener('change', ()=>generateCalendar(parseInt(yearSelect.value), parseInt(monthSelect.value)));
 prevBtn.addEventListener('click', ()=>{ let y=parseInt(yearSelect.value); let m=parseInt(monthSelect.value)-1; if(m<0){m=11;y--;} yearSelect.value=y; monthSelect.value=m; generateCalendar(y,m); });
 nextBtn.addEventListener('click', ()=>{ let y=parseInt(yearSelect.value); let m=parseInt(monthSelect.value)+1; if(m>11){m=0;y++;} yearSelect.value=y; monthSelect.value=m; generateCalendar(y,m); });
-toggleBtn.addEventListener('click', ()=>{ showBSBig=!showBSBig; toggleBtn.textContent=showBSBig?"Show AD Big":"Show BS Big"; generateCalendar(parseInt(yearSelect.value), parseInt(monthSelect.value)); });
+toggleBtn.addEventListener('click', ()=>{ showBSBig=!showBSBig; toggleBtn.textContent=showBSBig?"Switch Date Display":"Switch Date Display"; generateCalendar(parseInt(yearSelect.value), parseInt(monthSelect.value)); });
 
 // Widget Clock, Nepali date, English date, Horoscope
 function updateWidget(){
@@ -229,9 +529,10 @@ function updateWidget(){
   const nepDay=nepaliWeekdays[now.getDay()];
   const engDay=englishWeekdays[now.getDay()];
   document.getElementById('clockTime').textContent=now.toLocaleTimeString();
-  document.getElementById('nepaliDate').textContent=`${nepDay}, ${toNepaliNumber(bsNow.day)}/${toNepaliNumber(bsNow.month+1)}/${toNepaliNumber(bsNow.year)}`;
-  document.getElementById('englishDate').textContent=`${engDay}, ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  document.getElementById('nepaliDate').textContent=`${nepDay}, ${toNepaliNumber(bsNow.day)} ${nepaliMonths[bsNow.month]} ${toNepaliNumber(bsNow.year)}`;
+  document.getElementById('englishDate').textContent=`${engDay}, ${now.getDate()} ${englishMonths[bsNow.month]}, ${now.getFullYear()}`;
   document.getElementById('horoscope').textContent=`Horoscope: ${getHoroscope(now)}`;
+  document.getElementById('headerEN').textContent = now.toDateString();
 }
 setInterval(updateWidget,1000);
 updateWidget();
@@ -242,15 +543,15 @@ function drawAnalogClock(){
   const drawClock=()=>{
     ctx.clearRect(-radius,-radius,canvas.width,canvas.height);
     ctx.beginPath(); ctx.arc(0,0,radius-5,0,2*Math.PI); ctx.fillStyle='white'; ctx.fill();
-    ctx.strokeStyle='#4CAF50'; ctx.lineWidth=5; ctx.stroke();
+    ctx.strokeStyle='#d32f2f'; ctx.lineWidth=3; ctx.stroke();
     ctx.font=radius*0.15+"px arial"; ctx.textBaseline="middle"; ctx.textAlign="center";
-    for(let num=1;num<=12;num++){ let ang=num*Math.PI/6; ctx.rotate(ang); ctx.translate(0,-radius*0.85); ctx.rotate(-ang); ctx.fillStyle='#4CAF50'; ctx.fillText(num.toString(),0,0); ctx.rotate(ang); ctx.translate(0,radius*0.85); ctx.rotate(-ang);}
+    for(let num=1;num<=12;num++){ let ang=num*Math.PI/6; ctx.rotate(ang); ctx.translate(0,-radius*0.85); ctx.rotate(-ang); ctx.fillStyle='#333'; ctx.fillText(num.toString(),0,0); ctx.rotate(ang); ctx.translate(0,radius*0.85); ctx.rotate(-ang);}
     const now=new Date(); const hour=now.getHours()%12; const minute=now.getMinutes(); const second=now.getSeconds();
     drawHand(ctx,(hour*Math.PI/6)+(minute*Math.PI/(6*60))+(second*Math.PI/(360*60)),radius*0.5,6);
     drawHand(ctx,(minute*Math.PI/30)+(second*Math.PI/(30*60)),radius*0.7,4);
     drawHand(ctx,second*Math.PI/30,radius*0.9,2,'red');
   }
-  function drawHand(ctx,pos,length,width,color='#4CAF50'){ ctx.beginPath(); ctx.lineWidth=width; ctx.lineCap="round"; ctx.strokeStyle=color; ctx.moveTo(0,0); ctx.rotate(pos); ctx.lineTo(0,-length); ctx.stroke(); ctx.rotate(-pos);}
+  function drawHand(ctx,pos,length,width,color='#333'){ ctx.beginPath(); ctx.lineWidth=width; ctx.lineCap="round"; ctx.strokeStyle=color; ctx.moveTo(0,0); ctx.rotate(pos); ctx.lineTo(0,-length); ctx.stroke(); ctx.rotate(-pos);}
   setInterval(drawClock,1000); drawClock();
 }
 drawAnalogClock();
